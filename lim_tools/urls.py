@@ -20,9 +20,11 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from . import views
 
 urlpatterns = [
-    url(r'^linkedin/', include('linkedin.urls', namespace='linkedin')),
-    url(r'^admin/', admin.site.urls),
     url(r'^$', views.home_page, name='home_page'),
+    url(r'^admin/', admin.site.urls),
+    url(r'^accounts/', include('accounts.urls', namespace='accounts')),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
+    url(r'^linkedin/', include('linkedin.urls', namespace='linkedin')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
