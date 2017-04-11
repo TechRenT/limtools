@@ -11,6 +11,7 @@ from . import models
 @login_required
 def linkedin_profile_list(request):
     linkedin_profiles_list = models.LinkedinProfile.objects.all()
+    total = len(linkedin_profiles_list)
     page = request.GET.get('page', 1)
 
     paginator = Paginator(linkedin_profiles_list, 100)
@@ -22,7 +23,7 @@ def linkedin_profile_list(request):
         linkedin_profiles = paginator.page(paginator.num_pages)
 
     return render(request, 'linkedin/linkedin_profile_list.html', {'linkedin_profiles': linkedin_profiles,
-                                                                   'linkedin_profiles_list': linkedin_profiles_list})
+                                                                   'total': total})
 
 @login_required
 def linkedin_profile_create(request):
@@ -31,7 +32,9 @@ def linkedin_profile_create(request):
     if request.method == 'POST':
         form = forms.LinkedinProfileForm(request.POST)
         if form.is_valid():
-            form.save()
+            profile = form.save(commit=False)
+            profile.checker = request.user
+            profile.save()
             messages.add_message(request, messages.SUCCESS,
                 'LinkedIn profile has been successfully added!')
             return HttpResponseRedirect(reverse('linkedin:linkedin_form'))
