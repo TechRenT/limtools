@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -9,8 +10,19 @@ from . import models
 
 @login_required
 def linkedin_profile_list(request):
-    linkedin_profiles = models.LinkedinProfile.objects.all()
-    return render(request, 'linkedin/linkedin_profile_list.html', {'linkedin_profiles': linkedin_profiles})
+    linkedin_profiles_list = models.LinkedinProfile.objects.all()
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(linkedin_profiles_list, 100)
+    try:
+        linkedin_profiles = paginator.page(page)
+    except PageNotAnInteger:
+        linkedin_profiles = paginator.page(1)
+    except EmptyPage:
+        linkedin_profiles = paginator.page(paginator.num_pages)
+
+    return render(request, 'linkedin/linkedin_profile_list.html', {'linkedin_profiles': linkedin_profiles,
+                                                                   'linkedin_profiles_list': linkedin_profiles_list})
 
 @login_required
 def linkedin_profile_create(request):
