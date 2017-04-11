@@ -17,5 +17,7 @@ class LinkedinProfileForm(forms.ModelForm):
 
         if profile_link[-1] == '/':
             raise forms.ValidationError("Profile link must not end with slash!")
+        if "?authType=" in profile_link:
+            raise forms.ValidationError("Please get the short version of this profile link!")
         if profile_link in profile_list:
             raise forms.ValidationError("This profile already exist in our database!")
